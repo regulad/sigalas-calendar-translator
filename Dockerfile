@@ -91,10 +91,10 @@ COPY --from=builder /code/dist/sigalas_calendar_translator-*.whl /tmp/
 RUN pip install --user /tmp/sigalas_calendar_translator-*.whl
 
 # install the playwright browsers (has to be as the user)
-RUN /home/sigalas-calendar-translator/.local/bin/playwright install  # should be on path from installing using pip
+RUN /home/sigalas_calendar_translator/.local/bin/.local/bin/playwright install  # should be on path from installing using pip
 
 # Now do something!
-CMD ["/home/sigalas-calendar-translator/.local/bin/sigalas-calendar-translator", "serve"]
+CMD ["/home/sigalas_calendar_translator/.local/bin/sigalas-calendar-translator", "serve"]
 
 # or expose a port:
 # EXPOSE 8080/tcp
