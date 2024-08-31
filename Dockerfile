@@ -23,7 +23,7 @@ RUN apk add -U tzdata --no-cache \
     && pip install --upgrade pip
 
 # Install Playwright and its dependencies
-RUN pip install playwright \
+RUN pip install "playwright==1.46.0" \
     && playwright install-deps \
     && playwright install
 
