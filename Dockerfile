@@ -84,6 +84,9 @@ RUN pip install playwright && playwright install-deps && pip uninstall -y playwr
 # Switch to non-root user (for security)
 USER $USERNAME
 
+# extend our path to include python (for playwright)
+ENV PATH="$HOME/.local/bin:$PATH"
+
 # Install the package in the user space
 COPY --from=builder /code/dist/sigalas_calendar_translator-*.whl /tmp/
 RUN pip install --user /tmp/sigalas_calendar_translator-*.whl
@@ -92,7 +95,7 @@ RUN pip install --user /tmp/sigalas_calendar_translator-*.whl
 RUN playwright install  # should be on path from installing using pip
 
 # Now do something!
-CMD ["/home/sigalas-calendar-translator/.local/bin/sigalas-calendar-translator", "serve"]
+CMD ["sigalas-calendar-translator", "serve"]
 
 # or expose a port:
 # EXPOSE 8080/tcp
