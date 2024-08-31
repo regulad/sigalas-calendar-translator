@@ -84,14 +84,14 @@ RUN pip install playwright && playwright install-deps && pip uninstall -y playwr
 # Switch to non-root user (for security)
 USER $USERNAME
 
-# i couldn't get setting the path to include ~/.local/bin to work, so I just call the paths directly below
+ENV PATH="/home/$USERNAME/.local/bin:${PATH}"
 
 # Install the package in the user space
 COPY --from=builder /code/dist/sigalas_calendar_translator-*.whl /tmp/
 RUN pip install --user /tmp/sigalas_calendar_translator-*.whl
 
 # install the playwright browsers (has to be as the user)
-RUN /home/sigalas_calendar_translator/.local/bin/.local/bin/playwright install  # should be on path from installing using pip
+RUN /home/sigalas_calendar_translator/.local/bin/playwright install  # should be on path from installing using pip
 
 # Now do something!
 CMD ["/home/sigalas_calendar_translator/.local/bin/sigalas-calendar-translator", "serve"]
