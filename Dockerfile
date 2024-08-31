@@ -1,7 +1,7 @@
 # https://stackoverflow.com/questions/53835198/integrating-python-poetry-with-docker/54763270#54763270
 # Copyright (c) 2023  Parker Wahle - Licensed under MIT License (do whatever you want)
 
-FROM python:3.11-slim-bullseye AS base
+FROM python:3.12-slim-bullseye AS base
 
 # Install system dependencies for Python and Playwright
 RUN apt-get update && apt-get install -y --no-install-recommends \
