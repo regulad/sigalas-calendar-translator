@@ -22,11 +22,6 @@ RUN apk add -U tzdata --no-cache \
         font-noto-emoji \
     && pip install --upgrade pip
 
-# Install Playwright and its dependencies
-RUN pip install "playwright==1.46.0" \
-    && playwright install-deps \
-    && playwright install
-
 # --------------------------------------
 # ---------- Copy and compile ----------
 # We use a multi-stage build to reduce the size of the final image
@@ -92,6 +87,9 @@ USER $USERNAME
 # Install the package in the user space
 COPY --from=builder /code/dist/sigalas_calendar_translator-*.whl /tmp/
 RUN pip install --user /tmp/sigalas_calendar_translator-*.whl
+
+# Also install the playwright dependencies
+RUN python -m playwright install
 
 # Now do something!
 CMD ["/home/sigalas-calendar-translator/.local/bin/sigalas-calendar-translator", "serve"]
