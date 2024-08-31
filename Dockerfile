@@ -79,7 +79,7 @@ RUN groupadd -g $USER_GID $USERNAME \
     && useradd -m -u $USER_UID -g $USER_GID -s /bin/bash $USERNAME
 
 # Install playwright runtime dependencies
-RUN python -m playwright install-deps && python -m playwright install
+RUN pip install playwright && playwright install-deps && playwright install && pip uninstall -y playwright
 
 # Switch to non-root user (for security)
 USER $USERNAME
