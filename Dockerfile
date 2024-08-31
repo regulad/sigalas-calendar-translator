@@ -78,15 +78,15 @@ ARG USER_GID=$USER_UID
 RUN groupadd -g $USER_GID $USERNAME \
     && useradd -m -u $USER_UID -g $USER_GID -s /bin/bash $USERNAME
 
+# Install playwright runtime dependencies
+RUN python -m playwright install-deps && python -m playwright install
+
 # Switch to non-root user (for security)
 USER $USERNAME
 
 # Install the package in the user space
 COPY --from=builder /code/dist/sigalas_calendar_translator-*.whl /tmp/
 RUN pip install --user /tmp/sigalas_calendar_translator-*.whl
-
-# Also install the playwright dependencies
-RUN python -m playwright install
 
 # Now do something!
 CMD ["/home/sigalas-calendar-translator/.local/bin/sigalas-calendar-translator", "serve"]
