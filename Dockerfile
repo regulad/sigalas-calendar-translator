@@ -85,7 +85,7 @@ RUN pip install playwright && playwright install-deps && pip uninstall -y playwr
 USER $USERNAME
 
 # extend our path to include python (for playwright)
-ENV PATH="$HOME/.local/bin:$PATH"
+RUN export PATH=$PATH:/home/$USERNAME/.local/bin
 
 # Install the package in the user space
 COPY --from=builder /code/dist/sigalas_calendar_translator-*.whl /tmp/
