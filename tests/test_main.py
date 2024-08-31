@@ -1,8 +1,11 @@
 """Test cases for the __main__ module."""
 
 import pytest
+
+
 from
 from typer.testing import CliRunner
+
 
 sigalas_calendar_translator.__main__ import cli
 

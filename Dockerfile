@@ -3,11 +3,29 @@
 
 FROM python:3.11.4-alpine3.18 AS base
 
-# In Python, the line between a compile-time and run-time dependency is blurry,
-# so we play it safe by installing everything
+# Install system dependencies for Python and Playwright
 RUN apk add -U tzdata --no-cache \
-    && apk add gcc musl-dev libffi-dev openssl-dev make git curl --no-cache \
+    && apk add --no-cache \
+        gcc \
+        musl-dev \
+        libffi-dev \
+        openssl-dev \
+        make \
+        git \
+        curl \
+        libstdc++ \
+        chromium \
+        nss \
+        freetype \
+        harfbuzz \
+        ttf-freefont \
+        font-noto-emoji \
     && pip install --upgrade pip
+
+# Install Playwright and its dependencies
+RUN pip install playwright \
+    && playwright install-deps \
+    && playwright install
 
 # --------------------------------------
 # ---------- Copy and compile ----------
@@ -15,8 +33,6 @@ RUN apk add -U tzdata --no-cache \
 FROM base AS builder
 
 # Configure env variables for build/install
-# ENV no longer adds a layer in new Docker versions,
-# so we don't need to chain these in a single line
 ENV PYTHONFAULTHANDLER=1
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONHASHSEED=random
@@ -25,18 +41,16 @@ ENV PIP_DISABLE_PIP_VERSION_CHECK=on
 ENV PIP_DEFAULT_TIMEOUT=120
 ENV POETRY_VERSION=1.5.1
 
-# Install system deps
+# Install Poetry
 RUN pip install "poetry==$POETRY_VERSION"
 
 # Copy only requirements to cache them in docker layer
 WORKDIR /code
-# Although it would be very convienient to only copy the pyproject.toml file so that we can cache the dependencies,
+# Although it would be very convenient to only copy the pyproject.toml file so that we can cache the dependencies,
 # Poetry requires the whole project to be present in order to install the dependencies
 COPY . /code
 
 # Install with poetry
-# pip install would probably work, too, but we'd have to make sure it's a recent enough pip
-# Don't bother creating a virtual env -- significant performance increase
 RUN poetry config virtualenvs.create false \
   && poetry install --no-interaction --no-ansi --only main
 
@@ -80,7 +94,7 @@ COPY --from=builder /code/dist/sigalas_calendar_translator-*.whl /tmp/
 RUN pip install --user /tmp/sigalas_calendar_translator-*.whl
 
 # Now do something!
-CMD ["/home/sigalas-calendar-translator/.local/bin/sigalas-calendar-translator"]
+CMD ["/home/sigalas-calendar-translator/.local/bin/sigalas-calendar-translator", "serve"]
 
 # or expose a port:
 # EXPOSE 8080/tcp

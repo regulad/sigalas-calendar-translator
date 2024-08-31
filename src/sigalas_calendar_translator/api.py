@@ -1,4 +1,4 @@
-"""Asset utilities for Sigalas Calendar Translator - Sigalas Calendar Translator.
+"""FastAPI api  for Sigalas Calendar Translator - Sigalas Calendar Translator.
 
 Copyright (C) 2024  Parker Wahle
 
@@ -15,15 +15,17 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """  # noqa: E501, B950
+from fastapi import FastAPI, Response
 
-from __future__ import annotations
+from .scraping import get_month_data
 
-from importlib.resources import files
+app = FastAPI()
 
+@app.get("/{calendar_id}.ics")
+def serve_calendar(calendar_id: int):
+    if 1 <= calendar_id <= 8:
+        calendar = get_month_data()[calendar_id - 1]
+        return Response(content=str(calendar), media_type="text/calendar")
+    return {"error": "Invalid calendar ID. Please use a number between 1 and 8."}
 
-# The root of the package. This may not be a path if the package is installed, so just access the Traversable.
-PACKAGE = files(__package__)
-# If you use all of your files in a folder like `assets` or `resources` (recommended), use the following line.
-RESOURCES = PACKAGE / "resources"
-
-__all__ = ("RESOURCES",)
+__all__ = ("app",)

@@ -21,19 +21,35 @@ from __future__ import annotations
 import json
 
 import typer
+import uvicorn
+from rich.progress import Progress
 
+from .api import app
+from .scraping import get_month_data
 from ._assets import RESOURCES
+
 
 cli = typer.Typer()
 
 
 @cli.command()
-def main() -> None:
-    data = RESOURCES / "data.json"
-    with data.open() as json_fp:
-        parsed = json.load(json_fp)
-    status = parsed["status"]
-    print(typer.style(status, fg=typer.colors.GREEN, bold=True))
+def serve() -> None:
+    typer.echo("Starting server at http://0.0.0.0:8080")
+    typer.echo("Press Ctrl+C to stop the server.")
+    uvicorn.run(app, host="0.0.0.0", port=8080)
+
+
+@cli.command()
+def once() -> None:
+    with Progress() as progress:
+        # add an endless task
+        task_id = progress.add_task("Downloading", total=0)
+        month_data = get_month_data()
+        for i, period in enumerate(month_data):
+            with open(f"{i+1}_calendar.ics", "w") as f:
+                f.writelines(period.serialize_iter())
+        progress.update(task_id, advance=1)
+    typer.echo("Done! Check your CWD.")
 
 
 if __name__ == "__main__":  # pragma: no cover
