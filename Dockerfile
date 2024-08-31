@@ -1,25 +1,24 @@
 # https://stackoverflow.com/questions/53835198/integrating-python-poetry-with-docker/54763270#54763270
 # Copyright (c) 2023  Parker Wahle - Licensed under MIT License (do whatever you want)
 
-FROM python:3.11.4-alpine3.18 AS base
+FROM python:3.11-slim-bullseye AS base
 
 # Install system dependencies for Python and Playwright
-RUN apk add -U tzdata --no-cache \
-    && apk add --no-cache \
-        gcc \
-        musl-dev \
-        libffi-dev \
-        openssl-dev \
-        make \
-        git \
-        curl \
-        libstdc++ \
-        chromium \
-        nss \
-        freetype \
-        harfbuzz \
-        ttf-freefont \
-        font-noto-emoji \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    tzdata \
+    gcc \
+    libffi-dev \
+    libssl-dev \
+    make \
+    git \
+    curl \
+    chromium \
+    libnss3 \
+    libfreetype6 \
+    libharfbuzz0b \
+    fonts-freefont-ttf \
+    fonts-noto-color-emoji \
+    && rm -rf /var/lib/apt/lists/* \
     && pip install --upgrade pip
 
 # --------------------------------------
@@ -76,12 +75,10 @@ ARG USERNAME=sigalas_calendar_translator
 ARG USER_UID=1008
 ARG USER_GID=$USER_UID
 
-RUN addgroup -g $USER_GID -S $USERNAME \
-    && adduser -u $USER_UID -G $USERNAME -D -S $USERNAME
+RUN groupadd -g $USER_GID $USERNAME \
+    && useradd -m -u $USER_UID -g $USER_GID -s /bin/bash $USERNAME
 
 # Switch to non-root user (for security)
-# This makes dockerfile_lint complain, but it's fine
-# dockerfile_lint - ignore
 USER $USERNAME
 
 # Install the package in the user space
