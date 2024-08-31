@@ -54,7 +54,7 @@ xdoctest = {extras = ["colors"], version = ">=0.15.10"}
 myst-parser = {version = ">=0.16.1"}
 
 [tool.poetry.scripts]
-sigalas-calendar-translator = "sigalas_calendar_translator.__main__:main"
+sigalas-calendar-translator = "sigalas_calendar_translator.__main__:cli"
 
 [tool.poetry.group.dev.dependencies]
 pyinstaller = "^5.13.0"

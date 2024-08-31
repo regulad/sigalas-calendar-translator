@@ -3,7 +3,7 @@ services:
   # If you have any databases or other services that your application depends on, add them here.
   # You should also add a 'depend' clause to your application service so that it doesn't start until the other services are ready.
   sigalas_calendar_translator:
-    image: ghcr.io/regulad/sigalas_calendar_translator:latest
+    image: ghcr.io/regulad/sigalas-calendar-translator:latest
     hostname: "sigalas_calendar_translator" # Use this hostname with a reverse proxy like nginx attached to your network
     build:
       context: .
@@ -33,6 +33,8 @@ services:
       options:
         max-size: 10m # 10 megabytes
         max-file: "3" # 3 files
+    ports:
+      - "8080:8080"
     stdin_open: true # if you don't need stdin, remove this line
     tty: true # if you don't need a psuedo-tty, remove this line
 networks:
